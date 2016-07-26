@@ -24,6 +24,7 @@ except ImportError as e:
 
 import math
 import numpy as np
+from PIL import Image as PILim
 
 RAD2DEG = 57.29577951308232
 
@@ -106,6 +107,48 @@ class Viewer(object):
         arr = np.fromstring(image_data.data, dtype=np.uint8, sep='')
         arr = arr.reshape(self.height, self.width, 4)
         return arr[::-1,:,0:3]
+
+    def get_array_no_window(self):
+        glClearColor(1,1,1,1)
+        self.window.clear()
+        # self.window.switch_to()
+        self.window.dispatch_events()
+        self.transform.enable()
+        for geom in self.geoms:
+            geom.render()
+        for geom in self.onetime_geoms:
+            geom.render()
+        self.transform.disable()
+        # self.window.flip()
+        self.onetime_geoms = []
+        # self.window.flip()
+        image_data = pyglet.image.get_buffer_manager().get_color_buffer().get_image_data()
+        # self.window.flip()
+        arr = np.fromstring(image_data.data, dtype=np.uint8, sep='')
+        arr = arr.reshape(self.height, self.width, 4)
+        return arr[::-1,:,0:3]
+
+    def get_image_no_window(self):
+        glClearColor(1,1,1,1)
+        self.window.clear()
+        # self.window.switch_to()
+        self.window.dispatch_events()
+        self.transform.enable()
+        for geom in self.geoms:
+            geom.render()
+        for geom in self.onetime_geoms:
+            geom.render()
+        self.transform.disable()
+        # self.window.flip()
+        self.onetime_geoms = []
+        # self.window.flip()
+        image_data = pyglet.image.get_buffer_manager().get_color_buffer().get_image_data()
+        # self.window.flip()
+        arr = np.fromstring(image_data.data, dtype=np.uint8, sep='')
+        arr = arr.reshape(self.height, self.width, 4)
+        # print(arr.shape)
+        return PILim.fromarray(arr, 'RGBA')
+
 
 def _add_attrs(geom, attrs):
     if "color" in attrs:
